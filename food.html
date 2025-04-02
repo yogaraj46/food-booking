@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TastyBites - Online Food Ordering</title>
+  <style>
+    /* Basic Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: #f5f5f5;
+      color: #191818;
+    }
+    
+    header {
+      background-color: #ff6b6b;
+      color: white;
+      padding: 1rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .nav-links {
+      display: flex;
+      list-style: none;
+    }
+    
+    .nav-links li {
+      margin-left: 1.5rem;
+    }
+    
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .cart-icon {
+      position: relative;
+      cursor: pointer;
+    }
+    
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: #ffd166;
+      color: #333;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    
+    .hero {
+      background-color: #4ecdc4;
+      color: white;
+      padding: 3rem 2rem;
+      border-radius: 10px;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .btn {
+      background-color: #ffd166;
+      color: #333;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s;
+    }
+    
+    .btn:hover {
+      background-color: #ffb347;
+    }
+    
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    
+    .category-btn {
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .category-btn:hover, .category-btn.active {
+      background-color: #ff6b6b;
+      color: white;
+      border-color: #ff6b6b;
+    }
+    
+    .menu-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+    
+    .menu-item {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    
+    .menu-item:hover {
+      transform: translateY(-5px);
+    }
+    
+    .food-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background-color: #f0f0f0;
+    }
+    
+    .item-info {
+      padding: 1rem;
+    }
+    
+    .item-title {
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    
+    .item-title h3 {
+      background-color: #fdfbfb;
+      font-size: 1.1rem;
+    }
+    
+    .price {
+      color: #fb4646;
+      background-color: #f0f0f0;
+      font-weight: bold;
+    }
+    
+    .item-desc {
+      color: #1a1a1a;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .add-to-cart {
+      width: 100%;
+      padding: 0.5rem;
+      background-color: #df1616;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .add-to-cart:hover {
+      background-color: #ff5252;
+    }
+    
+    #cart-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(247, 240, 240, 0.905);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .cart-content {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .cart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .close-cart {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .cart-items {
+      margin-bottom: 1.5rem;
+    }
+    
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .cart-item-info {
+      flex-grow: 1;
+      padding: 0 1rem;
+    }
+    
+    .cart-item-quantity {
+      display: flex;
+      align-items: center;
+    }
+    
+    .quantity-btn {
+      background-color: #f0f0f0;
+      border: none;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    .quantity {
+      padding: 0 0.75rem;
+    }
+    
+    .remove-item {
+      color: #ff6b6b;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin: 1.5rem 0;
+    }
+    
+    .checkout-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #4ecdc4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    
+    .checkout-btn:hover {
+      background-color: #3dbdb3;
+    }
+    
+    footer {
+      background-color: #333;
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      margin: 1rem 0;
+    }
+    
+    .footer-links li {
+      margin: 0 1rem;
+    }
+    
+    .footer-links a {
+      color: #ddd;
+      text-decoration: none;
+    }
+    
+    .footer-links a:hover {
+      color: white;
+    }
+    
+    @media (max-width: 768px) {
+      .menu-items {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+      
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .nav-links li {
+        margin-left: 1rem;
+      }
+      
+      .menu-items {
+        grid-template-columns: 1fr;
+      }
+      
+      .hero {
+        padding: 2rem 1rem;
+      }
+      
+      .hero h1 {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">RAKSHU TASTYFOODS  </div>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Menu</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+        <li class="cart-icon" onclick="openCart()">
+          ?? <span class="cart-count">0</span>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  
+  <main>
+    <section class="hero">
+      <h1>Food Delivered Fast</h1>
+      <p>Enjoy your favorite meals from the comfort of your home</p>
+      <a href="#menu" class="btn">Order Now</a>
+    </section>
+    
+    <section id="menu">
+      <div class="categories">
+        <button class="category-btn active">All</button>
+        <button class="category-btn">Pizza</button>
+        <button class="category-btn">Burgers</button>
+        <button class="category-btn">Briyani</button>
+        <button class="category-btn">chicken rice </button>
+        <button class="category-btn">Drinks</button>
+      </div>
+      
+      <div class="menu-items">
+        <!-- Pizza 1 -->
+        <div class="menu-item">
+          <div class="food-img">
+            <img src="class.jpeg">
+          </div>
+          <div class="item-info">
+            <div class="item-title">
+              <h3>classic pizza</h3>
+              <span class="price">160.99</span>
+            </div>
+            <p class="item-desc">Classic pizza with tomato sauce, mozzarella, and fresh basil</p>
+            <button class="add-to-cart" onclick="addToCart('Margherita Pizza', 12.99)">Add to Cart</button>
+          </div>
+        </div>
+        
+        <!-- Pizza 2 -->
+        <div class="menu-item">
+          <div class="food-img">
+            <img src = "pep.jpeg">
+          </div>
+          <div class="item-info">
+            <div class="item-title">
+              <h3>Pepperoni Pizza</h3>
+              <span class="price">199.99</span>
+            </div>
+            <p class="item-desc">Traditional pepperoni pizza with extra cheese and Italian herbs</p>
+            <button class="add-to-cart" onclick="addToCart('Pepperoni Pizza', 14.99)">Add to Cart</button>
+          </div>
+        </div>
+        
+        <!-- Burger 1 -->
+        <div class="menu-item">
+          <div class="food-img">
+            <img src="buger.jpeg">
+           </div>
+          <div class="item-info">
+            <div class="item-title">
+              <h3>Classic Cheeseburger</h3>
+              <span class="price">149.99</span>
+            </div>
+            <p class="item-desc">Juicy beef patty with cheese, lettuce, tomato, and special sauce</p>
+            <button class="add-to-cart" onclick="addToCart('Classic Cheeseburger', 9.99)">Add to Cart</button>
+          </div>
+        </div>
+        
+        <!-- Asian 1 -->
+        <div class="menu-item">
+          <div class="food-img">
+            <img src="chi.jpeg">
+          </div>
+          <div class="item-info">
+            <div class="item-title">
+              <h3>Chicken Fried Rice</h3>
+              <span class="price">129.99</span>
+            </div>
+            <p class="item-desc">Wok-fried rice with chicken, vegetables, and soy sauce</p>
+            <button class="add-to-cart" onclick="addToCart('Chicken Fried Rice', 11.99)">Add to Cart</button>
+          </div>
+        </div>
+        
+        <!-- Dessert 1 -->
+        <div class="menu-item">
+          <div class="food-img">
+            <img src="cho.jpeg">
+          </div>
+          <div class="item-info">
+            <div class="item-title">
+              <h3>Chocolate Brownie</h3>
+              <span class="price">99.99</span>
+            </div>
+            <p class="item-desc">Rich chocolate brownie served with vanilla ice cream</p>
+            <button class="add-to-cart" onclick="addToCart('Chocolate Brownie', 5.99)">Add to Cart</button>
+          </div>
+        </div>
+        
+        <!-- Drink 1 -->
+        <div class="menu-item">
+          <div class="food-img">
+            <img src="le.jpeg">
+          </div>
+          <div class="item-info">
+            <div class="item-title">
+              <h3>Fresh Lemonade</h3>
+              <span class="price">59.99</span>
+            </div>
+            <p class="item-desc">Refreshing homemade lemonade with mint leaves</p>
+            <button class="add-to-cart" onclick="addToCart('Fresh Lemonade', 3.99)">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Cart Modal -->
+  <div id="cart-modal">
+    <div class="cart-content">
+      <div class="cart-header">
+        <h2>Your Cart</h2>
+        <button class="close-cart" onclick="closeCart()">&times;</button>
+      </div>
+      <div class="cart-items" id="cart-items">
+        <!-- Cart items will be added here dynamically -->
+      </div>
+      <div class="cart-total">
+        <span>Total:</span>
+        <span id="cart-total-amount">0.00</span>
+      </div>
+      <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+    </div>
+  </div>
+  
+  <footer>
+    <h3>Rakshu Tastyfoods</h3>
+    <ul class="footer-links">
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Terms of Service</a></li>
+      <li><a href="#">Privacy Policy</a></li>
+      <li><a href="#">Contact Us</a></li>
+    </ul>
+    <p>&copy; 2025 Rakshu TastyFoods. All rights reserved.</p>
+  </footer>
+  
+</body>
+</html>
